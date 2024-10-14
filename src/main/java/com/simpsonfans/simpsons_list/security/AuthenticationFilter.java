@@ -1,7 +1,6 @@
 package com.simpsonfans.simpsons_list.security;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -32,10 +31,10 @@ public class AuthenticationFilter extends GenericFilterBean {
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
 			httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-			PrintWriter writer = httpResponse.getWriter();
-			writer.print(exp.getMessage());
-			writer.flush();
-			writer.close();
+			httpResponse.getWriter().write("{ \"error\": \"Invalid API Key\"}");
+			httpResponse.getWriter().flush();
+			httpResponse.getWriter().close();
+			return;
 		}
 		
 		filterChain.doFilter(request, response);

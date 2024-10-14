@@ -12,10 +12,10 @@ import com.simpsonfans.simpsons_list.model.SimpsonsCharacter;
 public class SimpsonsController {
 	@GetMapping(value = "/")
 	public ResponseEntity<ArrayList<SimpsonsCharacter>> getEndpoint() {
-		System.out.println("COntroller reached!");
+		ArrayList<SimpsonsCharacter> res = new ArrayList<SimpsonsCharacter>();
 		SimpsonsCharacter myChar = new SimpsonsCharacter("homer", "simpsons", 32);
-		ArrayList<SimpsonsCharacter> output = new ArrayList<SimpsonsCharacter>();
-		output.add(myChar);
-		return ResponseEntity.ok(output);
+		res.add(myChar);
+
+		return ResponseEntity.ok(res);
 	}
 }
