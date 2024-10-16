@@ -30,7 +30,6 @@ public class AuthenticationService {
 	
 	public static Authentication getAuthentication(HttpServletRequest request) {
 		String requestApiKey = request.getHeader(AUTH_TOKEN_HEADER_NAME);
-		System.out.println("Does " + requestApiKey + " match " + API_KEY);
 		
 		if (requestApiKey == null || !requestApiKey.equals(API_KEY)) {
 			throw new BadCredentialsException("Invalid API Key");
