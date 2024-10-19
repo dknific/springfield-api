@@ -1,21 +1,24 @@
 package com.simpsonfans.simpsons_list.controller;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.simpsonfans.simpsons_list.model.SimpsonsCharacter;
+import com.simpsonfans.simpsons_list.service.SimpsonsCharacterService;
 
 @RestController
 public class SimpsonsController {
-	@GetMapping(value = "/")
-	public ResponseEntity<ArrayList<SimpsonsCharacter>> getEndpoint() {
-		ArrayList<SimpsonsCharacter> res = new ArrayList<SimpsonsCharacter>();
-		SimpsonsCharacter myChar = new SimpsonsCharacter("homer", "simpsons", 32);
-		res.add(myChar);
+	
+	private final SimpsonsCharacterService simpsonsCharacterService;
+	
+	public SimpsonsController(SimpsonsCharacterService simpsonsCharacterService) {
+		this.simpsonsCharacterService = simpsonsCharacterService;
+	}
 
-		return ResponseEntity.ok(res);
+	@GetMapping(value = "/")
+	public List<SimpsonsCharacter> getEndpoint() {
+		return simpsonsCharacterService.getAllCharacters();
 	}
 }
