@@ -67,12 +67,12 @@ Run > Run Configurations > Environment
 Then, manually add each variable and value to tell Eclipse what to substitute into your `application.properties` file.
 
 ## 3. The Filter Chain Pattern (Security in Spring Boot):
+This API implements what is called the "filter chain" pattern. It works by adding a filter to incoming requests before they can hit the API's controller. The flow of what happens when the API receives a new request is as follows:
 1. The API receives an HTTP request.
-2. **SecurityConfig** lists a chain of commands to execute before any controller gets reached. One of the instructions says to instantiate a new `AuthenticationFilter` class instance.
-3. The **AuthenticationFilter** tries to create a new `ApiKeyAuthentication` class for the incoming HTTP request by importing the `AuthenticationService` and calling its class method `getAuthentication()`.
-4. **AuthenticationService** receives the HTTP request and performs the logic of matching the request header's `x-api-key` value with the API's _actual_ key. If it is unsuccesful it instantiates and returns a `BadCredentialsException`; If the keys match, it creates and returns an instance of the `ApiKeyAuthentication` class.
-5. The **ApiKeyAuthentication** class is a class model that works the same way as your driver's license: it holds information about what your permissions are, and has a few methods to call them up.
-
+2. **SecurityConfig.java** implements a chain of commands to execute before any controller gets reached. One of the instructions says to instantiate a new `AuthenticationFilter` class instance.
+3. **AuthenticationFilter.java** receives all of the info about the HTTP request and uses a try/catch statement in an attempt to instantiate a new `ApiKeyAuthentication` object and grant it to the request. The `ApiKeyAuthentication` class is a user-made class that extends `AbstractAuthenticationToken` - a separate class that is native to Spring Security. In order to perform the key-checking logic that it needs to do, the filter class imports the `AuthenticationService.java` class and calls `getAuthentication()`.
+4. **AuthenticationService.java** holds the "business logic" code used for handling if the key string matches, etc. This `@Service` class needs to read from the system's `environment variables` to fetch and inject our secret API key. The reason there are two separate fields for storing the environment's API key is that we need to use the `@Value` annotation from Spring Boot to inject a value from `application.properties` into our current class file. You can't use `@Value` on a `static` field - but we cant access it within the `getAuthentication()` method if it's not static, hence the `makeApiKeyStatic()` method annotated with `@PostConstruct`. The goal of the `getAuthentication()` method that `AuthenticationFilter.java` calls is to return a successful `ApiKeyAuthentication.java` class; if it cannot do this, it returns a `BadCredentialsException` class instead.
+5. **ApiKeyAuthentication.java** is a class model that works the same way as your driver's license: it holds information about what your permissions are, and has a few methods to call them up. Only instantiated if the request provides the correct key.
 6. If an `ApiKeyAuthentication` class is instantianted, the appropriate API controller will be reached and will respond with the requested data.
 
 ## 4. Why is the Repository Class Empty?
@@ -95,17 +95,20 @@ To bypass this functionality, you can tell physically tell Hibernate what you wo
 │  │  │  └─ 📁/com
 │  │  │     └─ 📁/simpsonsfans
 │  │  │        └─ 📁/simpsons_list  ⭐ (Project Root)
-│  │  │           ├─ 📄 MySpringBootApplication.java
+│  │  │           ├─ 📄 SimpsonsCharacterListApplication.java
+│  │  │           ├─ 📁/config
+│  │  │           │  └─ 📄 CustomPhysicalNamingStrategy.java
 │  │  │           ├─ 📁/controller
 │  │  │           │  └─ 📄 SimpsonsController.java
-│  │  │           └─ 📁/model
-│  │  │              └─ 📄 SimpsonsCharacter.java
-│  │  │           └─ 📁/security
-│  │  │              ├─ 📄 ApiKeyAuthentication.java
-│  │  │              ├─ 📄 AuthenticationFilter.java
-│  │  │              └─ 📄 SecurityConfig.java
+│  │  │           ├─ 📁/model
+│  │  │           │  └─ 📄 SimpsonsCharacter.java
+│  │  │           ├─ 📁/security
+│  │  │           │  ├─ 📄 ApiKeyAuthentication.java
+│  │  │           │  ├─ 📄 AuthenticationFilter.java
+│  │  │           │  └─ 📄 SecurityConfig.java
 │  │  │           └─ 📁/service
-│  │  │              └─ 📄 AuthenticationService.java
+│  │  │              ├─ 📄 AuthenticationService.java
+│  │  │              └─ 📄 SimpsonsCharacterService.java
 │  │  └─ 📁/resources
 │  │     ├─ 📄 application.properties
 │  │     └─ 📁/static
