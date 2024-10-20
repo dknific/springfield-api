@@ -2,8 +2,8 @@
 This very simple API was made in Java with Spring Boot and is secured with an API key.
 ## Table of Contents:
 1. Annotations Used in Project
-2. Environment Variables (Plus: Eclipse IDE Setup)
-3. The Filter Chain Pattern (Security in Spring Boot)
+2. Environment Variables (*Plus: Eclipse IDE Setup*)
+3. The Filter Chain Pattern (*Security in Spring Boot*)
 4. Why is the Repository Class Empty?
 5. Hibernate and the CustomPhysicalNamingStrategy Config 
 6. Directory Structure of Project
@@ -76,16 +76,18 @@ This API implements what is called the "filter chain" pattern. It works by addin
 6. If an `ApiKeyAuthentication` class is instantianted, the appropriate API controller will be reached and will respond with the requested data.
 
 ## 4. Why is the Repository Class Empty?
-The repository class extends the native JpaRepository class. By default, this class imports a bunch of stuff that's ready-to-go out of the box.
+The repository layer of the application (*sometimes called the Data Access Layer*) is responsible for making connections to the SQL database and executing queries.
 
-Unless you need to define custom queries, this class on it's own will provide you everything you need to do basic queries to your database.
+In this particular app, the `SimpsonsCharacterService.java` class calls upon this repository interface to handle executing the actual SQL queries on the SQL database when our controller is executed. By having our `SimpsonsRepository.java` class extend `JpaRepository` (*provided via* `Spring Data`) we can use built-in SQL methods like `findAll()` to auto-generate simple SQL queries. By passing in type arugments of `<SimpsonsCharacter, UUID>` to the `JpaRepository` interface, we're telling our repository interface that the data will be formatted as `SimpsonsCharacter`, using a `UUID` as IDs.
 
-## 5. Hibernate and the CustomPhysicalNamingStrategy Config 
-Hibernate is a library that maps Java classes to database tables. By using annotations like `@Table`, `@Column`, and so on, you are telling Hibernate how to map and auto-generate SQL queries.
+In other words, this empty `SimpsonsRepository` interface exists to set the database data type as `SimpsonsCharacter.java`, and extends JPA Repository to provide access to built-in methods from `JpaRepository/Spring Data JPA`.
 
-By default, Hibernate uses a naming strategy where a table named `SimpsonsCharacter` gets mapped to `simpsons_character`; a field named `FirstName` gets mapped to `first_name`, and so on.
+## 5. Hibernate and the `CustomPhysicalNamingStrategy` Config 
+Hibernate is an Object-Relational Mapper (ORM) that maps Java classes to database tables. It takes the entity class models you're using in your API and maps them to whatever table or database you're accessing. Importantly, it works together with `JpaRepository` when it generates SQL querries. 
 
-To bypass this functionality, you can tell physically tell Hibernate what you would like it to auto-generate. These configurations can be found in the `/config/CustomPhysicalNamingStrategy.java` file.
+By using annotations like `@Table` and `@Column` within your entity model class files, you tell Hibernate how to map data found in the database to your Java models. However, you need to make sure that the fields in your entity model match the columns in your SQL database. By default, Hibernate uses a naming strategy wherein a table named `SimpsonsCharacter` gets converted to a table name of `simpsons_character`; a class field named `FirstName` gets mapped to a column name of `first_name`, and so on.
+
+To bypass this functionality, you can tell Hibernate how it should name the columns and tables in its SQL querries. These are done using methods with the `@Override` annotation, and can be found in `/config/CustomPhysicalNamingStrategy.java`. Taking the override for method `toPhysicalTableName()` as an example, we can see that the config now tells Hibernate to just return the class model field name as is, instead of making it lowercase and adding an underscore.
 ## 6. Directory Structure of Project:
 ```
 📁/simpsons-list
