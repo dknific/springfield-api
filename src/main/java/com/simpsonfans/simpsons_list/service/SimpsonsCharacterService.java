@@ -1,6 +1,8 @@
 package com.simpsonfans.simpsons_list.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -18,5 +20,15 @@ public class SimpsonsCharacterService {
 	
 	public List<SimpsonsCharacter> getAllCharacters() {
 		return simpsonsRepository.findAll();
+	}
+	
+	public List<SimpsonsCharacter> getCharacterByGUID(String guid) {
+		try {
+			UUID convertedGUID = UUID.fromString(guid);
+			return simpsonsRepository.findByGUID(convertedGUID);
+		} catch (IllegalArgumentException error) {
+			List<SimpsonsCharacter> output = new ArrayList<SimpsonsCharacter>();
+			return output;
+		}
 	}
 }
