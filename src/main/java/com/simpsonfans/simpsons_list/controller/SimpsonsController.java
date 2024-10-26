@@ -17,7 +17,7 @@ public class SimpsonsController {
 		this.simpsonsCharacterService = simpsonsCharacterService;
 	}
 
-	@GetMapping(value = "/")
+	@GetMapping(value = "/api/characters")
 	public List<SimpsonsCharacter> getEndpoint() {
 		return simpsonsCharacterService.getAllCharacters();
 	}
