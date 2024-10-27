@@ -2,6 +2,7 @@ package com.simpsonfans.simpsons_list.security;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -34,10 +35,13 @@ public class SecurityConfig {
 		return http.build();
 	}
 	
+	@Value("${SIMPSONS_ALLOWED_ORIGINS}")
+	private String allowedOrigins;
+	
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration conf = new CorsConfiguration();
-		conf.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+		conf.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
 		conf.setAllowedMethods(Arrays.asList("GET", "OPTIONS"));
 		conf.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-api-key"));
     conf.setExposedHeaders(Arrays.asList("Authorization"));
